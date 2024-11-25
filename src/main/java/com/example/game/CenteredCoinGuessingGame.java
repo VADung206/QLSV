@@ -1,3 +1,5 @@
+package com.example.game;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -7,6 +9,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+
+import java.io.File;
 import java.util.Random;
 
 public class CenteredCoinGuessingGame extends Application {
@@ -14,7 +20,7 @@ public class CenteredCoinGuessingGame extends Application {
     // Mảng lưu trữ vị trí của đồng xu
     private static final boolean[] COIN_PLACES = new boolean[4];
     private static final Random random = new Random();
-    private boolean gameEnded = false;  // Biến kiểm tra trò chơi đã kết thúc hay chưa
+    private final boolean gameEnded = false;  // Biến kiểm tra trò chơi đã kết thúc hay chưa
     private int score = 0;  // Điểm của người chơi
 
     public static void main(String[] args) {
@@ -38,8 +44,8 @@ public class CenteredCoinGuessingGame extends Application {
         // Thêm 4 ô hình ảnh
         for (int i = 0; i < 4; i++) {
             ImageView boxImage = new ImageView(new Image("file:box_default.png"));  // Hình ảnh ô mặc định
-            boxImage.setFitWidth(100);
-            boxImage.setFitHeight(100);
+            boxImage.setFitWidth(400);
+            boxImage.setFitHeight(300);
             int index = i;
 
             boxImage.setOnMouseClicked(e -> {
@@ -66,7 +72,7 @@ public class CenteredCoinGuessingGame extends Application {
         root.getChildren().add(grid);
 
         // Tạo và hiển thị giao diện
-        Scene scene = new Scene(root, 600, 600);  // Đặt kích thước cửa sổ
+        Scene scene = new Scene(root, 1298, 730);  // Đặt kích thước cửa sổ
         primaryStage.setTitle("Trò Chơi Tìm Đồng Xu");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -84,19 +90,31 @@ public class CenteredCoinGuessingGame extends Application {
     private void checkCoin(int index, ImageView boxImage, Stage primaryStage) {
         if (COIN_PLACES[index]) {
             // Người chơi chọn đúng ô có đồng xu
-            boxImage.setImage(new Image("file:box_coin.png"));  // Hiển thị đồng xu
+            boxImage.setImage(new Image("file:box_coin.png")); // Hiển thị vàng ngay lập tức
+            playSound("D:/UETTTTTTTT/THOOP/Game/src/main/resources/sounds/correct.mp3"); // Phát nhạc đúng
             score++;
-            showAlert("Chúc mừng!", "Bạn đã chọn đúng ô chứa đồng xu!\nĐiểm của bạn: " + score);
+            showAlert("Chúc mừng!", "Bạn đã chọn đúng ô chứa vàng!\nĐiểm của bạn: " + score);
+            primaryStage.close(); // Đóng cửa sổ sau khi hiển thị thông báo
         } else {
             // Người chơi chọn sai ô
-            boxImage.setImage(new Image("file:box_empty.png"));  // Hiển thị ô trống
-            showAlert("Thử lại!", "Ô này không có đồng xu. Trò chơi kết thúc.\nĐiểm cuối cùng của bạn: " + score);
-            primaryStage.close(); // Đóng cửa sổ trò chơi
-            return; // Thoát khỏi phương thức
+            boxImage.setImage(new Image("file:box_empty.png")); // Hiển thị ô trống ngay lập tức
+            playSound("D:/UETTTTTTTT/THOOP/Game/src/main/resources/sounds/wrong.mp3"); // Phát nhạc sai
+            score--;
+            showAlert("Hãy thử lại!", "Ô này không có vàng. Trò chơi kết thúc.\nĐiểm cuối cùng của bạn: " + score);
+            primaryStage.close(); // Đóng cửa sổ sau khi hiển thị thông báo
         }
+    }
 
-        // Sau khi chọn, không cho phép người chơi chọn lại
-        gameEnded = true;
+    // Phương thức phát âm thanh
+    private void playSound(String soundFilePath) {
+        try {
+            Media sound = new Media(new File(soundFilePath).toURI().toString());
+            MediaPlayer mediaPlayer = new MediaPlayer(sound);
+            mediaPlayer.setVolume(1.0);
+            mediaPlayer.play(); // Phát nhạc ngay lập tức
+        } catch (Exception e) {
+            System.out.println("Không thể phát âm thanh: " + e.getMessage());
+        }
     }
 
     // Hiển thị thông báo
